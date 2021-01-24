@@ -1,0 +1,15 @@
+{
+    "name": "kasa-monitor",
+    "version": "1.0.0",
+    "description": "Monitors TP-Link Kasa Smart Plug for energy consumption",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Mark Abbott",
+    "license": "MIT",
+    "dependencies": {
+        "messaging-api-telegram": "^1.0.4",
+        "tplink-smarthome-api": "^3.1.0"
+    }
+}
