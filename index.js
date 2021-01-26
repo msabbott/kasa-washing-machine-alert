@@ -52,8 +52,8 @@ const logEvent = function logEvent(eventName, device, state) {
     );
 };
 
-const telegram = new TelegramClient({ accessToken: telegram_bot_access_token });
-telegram.sendMessage(chat_id, msg_monitoring_started);
+const telegram = new TelegramClient({ accessToken: config.telegram.access_token });
+telegram.sendMessage(config.telegram.chat_id, config.messages.monitoring_started);
 
 // Create TP-Link client
 const client = new Client();
@@ -83,7 +83,7 @@ devices.forEach(function (deviceConfig, index) {
 
             if (deviceConfig.previous_value >= deviceConfig.power_active_threshold
                 && emeterRealtime.power < deviceConfig.power_active_threshold) {
-                telegram.sendMessage(chat_id, msg_device_finished.replace("${device_name}", deviceConfig.name));
+                telegram.sendMessage(config.telegram.chat_id, config.messages.device_finished.replace("${device_name}", deviceConfig.name));
 
                 // Start listening again, but at a much longer interval, waiting for the next washload
                 console.info(`${deviceConfig.name}: Switching to long polling interval`);
@@ -91,7 +91,7 @@ devices.forEach(function (deviceConfig, index) {
                 device.startPolling(deviceConfig.long_polling_interval);
                 deviceConfig.using_quick_polling = false;
             } else if (emeterRealtime.power >= deviceConfig.power_active_threshold && !deviceConfig.using_quick_polling) {
-                telegram.sendMessage(chat_id, msg_device_active.replace("${device_name}", deviceConfig.name));
+                telegram.sendMessage(config.telegram.chat_id, config.messages.device_active.replace("${device_name}", deviceConfig.name));
                 // Stop long interval polling, and switch to a faster polling rate
                 console.info(`${deviceConfig.name}: Switching to quick polling interval`);
                 deviceConfig.using_quick_polling = true;
