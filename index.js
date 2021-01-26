@@ -2,6 +2,8 @@ const util = require('util');
 const { Client } = require('tplink-smarthome-api');
 const { TelegramClient } = require('messaging-api-telegram');
 
+const config = require('./config.json');
+
 ////////////////////////////////////////////////////
 // Device configuration
 ////////////////////////////////////////////////////
