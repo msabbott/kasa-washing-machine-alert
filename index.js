@@ -46,8 +46,7 @@ const msg_device_finished = `The ${device_name} has finished`;
 const logEvent = function logEvent(eventName, device, state) {
     const stateString = state != null ? util.inspect(state) : '';
     console.log(
-        `${new Date().toISOString()} ${eventName} ${device.model} ${device.host}:${device.port
-        } ${stateString}`
+        `${new Date().toISOString()} ${eventName} ${device.model} ${device.name} ${device.host}:${device.port} ${stateString}`
     );
 };
 
@@ -68,7 +67,7 @@ devices.forEach(function (deviceConfig, index) {
 
     client.getDevice({ host: deviceConfig.ipaddress }).then((device) => {
         device.getSysInfo().then((info) => {
-            console.info(`Found device ${info.dev_name} (${info.alias}) - config name: ${deviceConfig.name}`);
+            console.info(`${deviceConfig.name}: Found device ${info.dev_name} (${info.alias})`);
         });
 
         // Start polling at the long polling interval
