@@ -23,7 +23,7 @@ const devices = [
         "quick_polling_interval": 2 * 60 * 1000, // 2 minutes
         "long_polling_interval": 30 * 60 * 1000, // 30 minutes
     }
-]
+];
 ////////////////////////////////////////////////////
 // Telegram Chat configuration
 ////////////////////////////////////////////////////
@@ -53,9 +53,6 @@ const logEvent = function logEvent(eventName, device, state) {
 
 const telegram = new TelegramClient({ accessToken: telegram_bot_access_token });
 telegram.sendMessage(chat_id, msg_monitoring_started);
-
-var previous = 0;
-var using_quick_polling = false;
 
 // Create TP-Link client
 const client = new Client();
