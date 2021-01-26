@@ -59,7 +59,7 @@ telegram.sendMessage(config.telegram.chat_id, config.messages.monitoring_started
 const client = new Client();
 
 // Iterate through devices in array
-devices.forEach(function (deviceConfig, index) {
+config.devices.forEach(function (deviceConfig, index) {
 
     console.info("Working with device: ", deviceConfig.name);
     console.info("Quick polling interval:", deviceConfig.quick_polling_interval);
