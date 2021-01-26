@@ -3,23 +3,27 @@ const { Client } = require('tplink-smarthome-api');
 const { TelegramClient } = require('messaging-api-telegram');
 
 ////////////////////////////////////////////////////
-// Script configuration
-////////////////////////////////////////////////////
-
-// Polling intervals in milliseconds
-const quick_polling_interval = 2 * 60 * 1000; // 2 minutes
-const long_polling_interval = 45 * 60 * 1000; // 45 minutes
-
-////////////////////////////////////////////////////
 // Device configuration
 ////////////////////////////////////////////////////
 
-// IP address (or host name) for the Smart plug
-const device_ip = "";
-
-// Threshold value (in Watts) for when device goes into an 'active' state (e.g washing clothes)
-const power_active_threshold = 1;
-
+const devices = [
+    {
+        "name": "Washing Machine",
+        "ipaddress": "<ip address goes here>",
+        "power_on_threshold": 0.25,
+        "power_active_threshold": 1,
+        "quick_polling_interval": 2 * 60 * 1000, // 2 minutes
+        "long_polling_interval": 45 * 60 * 1000, // 45 minutes
+    },
+    {
+        "name": "Dishwasher",
+        "ipaddress": "<ip address goes here>",
+        "power_on_threshold": 0.25,
+        "power_active_threshold": 1,
+        "quick_polling_interval": 2 * 60 * 1000, // 2 minutes
+        "long_polling_interval": 30 * 60 * 1000, // 30 minutes
+    }
+]
 ////////////////////////////////////////////////////
 // Telegram Chat configuration
 ////////////////////////////////////////////////////
@@ -48,51 +52,57 @@ const logEvent = function logEvent(eventName, device, state) {
 };
 
 const telegram = new TelegramClient({ accessToken: telegram_bot_access_token });
-
-console.info(`Quick polling interval: ${quick_polling_interval} milliseconds`);
-console.info(`Long polling interval: ${long_polling_interval} milliseconds`);
-console.info(`Device IP Address: ${device_ip}`);
-console.info(`Machine state 'Active' power threshold: ${power_active_threshold} Watt`);
-console.info("");
-
 telegram.sendMessage(chat_id, msg_monitoring_started);
 
 var previous = 0;
 var using_quick_polling = false;
 
+// Create TP-Link client
 const client = new Client();
-const plug = client.getDevice({ host: device_ip }).then((device) => {
 
-    device.getSysInfo().then((info) => {
-        console.info(`Found device ${info.dev_name} (${info.alias})`);
-    });
+// Iterate through devices in array
+devices.forEach(function (deviceConfig, index) {
 
-    // Start polling at the long polling interval
-    device.startPolling(long_polling_interval);
-    using_quick_polling = false;
+    console.info("Working with device: ", deviceConfig.name);
+    console.info("Quick polling interval:", deviceConfig.quick_polling_interval);
+    console.info("Long polling interval:", deviceConfig.long_polling_interval);
+    console.info("Device IP Address:", deviceConfig.ipaddress);
+    console.info("");
 
-    // Device (Common) Events
-    device.on('emeter-realtime-update', (emeterRealtime) => {
-        logEvent('emeter-realtime-update', device, emeterRealtime);
+    client.getDevice({ host: deviceConfig.ipaddress }).then((device) => {
+        device.getSysInfo().then((info) => {
+            console.info(`Found device ${info.dev_name} (${info.alias}) - config name: ${deviceConfig.name}`);
+        });
 
-        if (previous >= power_active_threshold && emeterRealtime.power < power_active_threshold) {
-            telegram.sendMessage(chat_id, msg_device_finished);
+        // Start polling at the long polling interval
+        deviceConfig.previous_value = 0;
+        deviceConfig.using_quick_polling = false;
+        device.startPolling(deviceConfig.long_polling_interval);
 
-            // Start listening again, but at a much longer interval, waiting for the next washload
-            console.info("Switching to long polling interval");
-            device.stopPolling();
-            device.startPolling(long_polling_interval);
-            using_quick_polling = false;
-        } else if (emeterRealtime.power >= power_active_threshold && !using_quick_polling) {
-            telegram.sendMessage(chat_id, msg_device_active);
-            // Stop long interval polling, and switch to a faster polling rate
-            console.info("Switching to quick polling interval");
-            using_quick_polling = true;
-            device.stopPolling();
-            device.startPolling(quick_polling_interval);
-        }
+        // Device (Common) Events
+        device.on('emeter-realtime-update', (emeterRealtime) => {
+            logEvent('emeter-realtime-update', device, emeterRealtime);
 
-        // Log the previous power consumption to allow for comparison on next loop
-        previous = emeterRealtime.power;
+            if (deviceConfig.previous_value >= deviceConfig.power_active_threshold
+                && emeterRealtime.power < deviceConfig.power_active_threshold) {
+                telegram.sendMessage(chat_id, `The ${deviceConfig.name} has finished`);
+
+                // Start listening again, but at a much longer interval, waiting for the next washload
+                console.info(`${deviceConfig.name}: Switching to long polling interval`);
+                device.stopPolling();
+                device.startPolling(deviceConfig.long_polling_interval);
+                deviceConfig.using_quick_polling = false;
+            } else if (emeterRealtime.power >= deviceConfig.power_active_threshold && !deviceConfig.using_quick_polling) {
+                telegram.sendMessage(chat_id, `Detected that the ${deviceConfig.name} is turned on`);
+                // Stop long interval polling, and switch to a faster polling rate
+                console.info(`${deviceConfig.name}: Switching to quick polling interval`);
+                deviceConfig.using_quick_polling = true;
+                device.stopPolling();
+                device.startPolling(deviceConfig.quick_polling_interval);
+            }
+
+            // Log the previous power consumption to allow for comparison on next loop
+            deviceConfig.previous_value = emeterRealtime.power;
+        });
     });
 });
