@@ -23,13 +23,6 @@ The script works by polling each device at a "long" interval (default: 45 minute
 
 Configuration of the script is configured either at teh script level or on a device-by-device basis. Configuration needs to be completed before the script will work correctly for you
 
-## Script configuration
-
-|Variable              |Type  |Units       |Default   |Description
-|----------------------|------|------------|----------|-----------
-|quick_polling_interval|Number|Milliseconds|2 minutes |When the device is detected as running, the status of the smart plug is polled at this interval
-|long_polling_interval |Number|Milliseconds|45 minutes|When the device is detected as not running, the status of the smart plub is polled at this interval
-
 ## Device configuration
 
 An array, called 'devices' is defined which holds a configuration object per device to be monitored. Each item in the array has the following configuration settings
@@ -39,7 +32,7 @@ An array, called 'devices' is defined which holds a configuration object per dev
 |name                  |String|N/A         |          |Preferred name for the appliance being monitored for use in messages
 |ipaddress             |String|N/A         |          |IP address or hostname of the smart plug device
 |power_on_threshold    |Number|Watts       |0.25      |Threshold value above which the device is considered to be on, but not in an 'active' state
-|power_active_threshold|Number|Watts       |1         |Threshold value above which the device is considered to be in an 'active' state - e.g. washing clothes.
+|power_active_threshold|Number|Watts       |1         |Threshold value above which the device is considered to be in an 'active' state - e.g. washing clothes
 |quick_polling_interval|Number|Milliseconds|2 minutes |When the device is detected as running, the status of the smart plug is polled at this interval
 |long_polling_interval |Number|Milliseconds|45 minutes|When the device is detected as not running, the status of the smart plub is polled at this interval
 
@@ -81,10 +74,9 @@ Message configuration is done at the script level. The `msg_device_active` and `
 
 |Variable              |Type  |Default                                   |Description
 |----------------------|------|------------------------------------------|-----------
-|device_name.          |String|"washing machine"                         |Preferred name for the appliance being monitored for use in messages
-|msg_monitoring_started|String|"Starting up the monitoring".             |Message sent to chat when the monitoring is started
-|msg_device_active.    |String|"Detected the ${device_name} is turned on"|Message sent to chat when the monitoring detects that the appliance is turned on an active. Note that this may not be a good technical description of the state of the appliance, but you should use a phrase that is better understood by the users rather than being technical accurate (e.g. using non-technical, more vague terms for non-programmers!)
-|msg_device_finished.  |String|"The ${device_name} has finished".        |Message sent to chat when the monitoring detects that the device has finished
+|msg_monitoring_started|String|"Starting up the monitoring"              |Message sent to chat when the monitoring is started
+|msg_device_active     |String|"Detected the ${device_name} is turned on"|Message sent to chat when the monitoring detects that the appliance is turned on an active. Note that this may not be a good technical description of the state of the appliance, but you should use a phrase that is better understood by the users rather than being technical accurate (e.g. using non-technical, more vague terms for non-programmers!)
+|msg_device_finished   |String|"The ${device_name} has finished"         |Message sent to chat when the monitoring detects that the device has finished
 
 # Running
 
