@@ -1,0 +1,29 @@
+{
+    "telegram": {
+        "chat_id": -1,
+        "access_token": "XXX:YYY"
+    },
+    "devices": [
+        {
+            "name": "Washing Machine",
+            "ipaddress": "<ip address goes here>",
+            "power_on_threshold": 0.25,
+            "active_threshold": 1,
+            "quick_polling_interval": 120000,
+            "long_polling_interval": 2700000
+        },
+        {
+            "name": "Dishwasher",
+            "ipaddress": "<ip address goes here>",
+            "power_on_threshold": 0.25,
+            "active_threshold": 1,
+            "quick_polling_interval": 120000,
+            "long_polling_interval": 1800000
+        }
+    ],
+    "messages": {
+        "monitoring_started": "Starting up the monitoring",
+        "device_active": "Detected the ${device_name} is turned on",
+        "device_finished": "The ${device_name} has finished"
+    }
+}
