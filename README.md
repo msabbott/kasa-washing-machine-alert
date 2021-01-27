@@ -1,11 +1,11 @@
 
-# kasa-washing-machine-alert
+# TP-Link Kasa Washing Machine Alert
 
 A basic alerting script for when the washing machine has finished, based on a TP-Link Kasa smart plug.
 
 ## Introduction
 
-This is a script for monitoring a Kasa energy monitor smart plug, detecting changes in power consumption, and waiting for a drop in consumption before sending a message to a Telegram chat.
+This is a script for monitoring a TP-Link Kasa energy monitor smart plug, detecting changes in power consumption, and waiting for a drop in consumption before sending a message to a Telegram chat.
 
 ### Purpose
 
@@ -18,6 +18,20 @@ This project uses the Node library "[tplink-smarthome-api](https://github.com/pl
 # How it works
 
 The script works by polling each device at a "long" interval (default: 45 minutes.) When it detects the power consumption is over a given threshold (default: 1 watt) it determines that the machine is "On" and is "Active" (i.e. washing clothes.) At this point, it sends a message to the Telegram chat, switches to a "quick" interval (default: 2 minutes) and continually requests power consumption at this interval. When the power consumption drops below 1 Watt, it determines that the machine has finished and therefore sends a completion message to the chat, and returns to the "long" interval.
+
+# Installation
+
+Once downloaded, before the script can be executed, a configuration file, called "config.json", needs to be created. The file schema is described in the "Configuration" section of this document, and a template file is provided which can be copied and updated.
+
+## Initial configuration discovery
+
+Before the script can be used, you need to understand the power consumption of the appliance that is plugged into the smart plug. This may require you to measure the data whilst the appliance is running.
+
+Using the Kasa app, measure the power consumption (in Watts) whilst the appliance is in the following states (Note that the smart plug should be turned On during all of these states)
+
+1. When the appliance is turned off - This value is likely to be 0W.
+2. When the appliance is turned on, but not active (i.e. Not washing clothes) - This value becomes the "power_on_threshold" for the device configuration.
+3. When the appliance is turned on and active (i.e. Washing clothes) - This value may change over time during the appliance's cycle. Take the minimum observed value and round it downwards. This value becomes the "active_threshold" for the device configuration.
 
 # Configuration
 
