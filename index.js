@@ -4,47 +4,6 @@ const { TelegramClient } = require('messaging-api-telegram');
 
 const config = require('./config.json');
 
-////////////////////////////////////////////////////
-// Device configuration
-////////////////////////////////////////////////////
-
-const devices = [
-    {
-        "name": "Washing Machine",
-        "ipaddress": "<ip address goes here>",
-        "power_on_threshold": 0.25,
-        "power_active_threshold": 1,
-        "quick_polling_interval": 2 * 60 * 1000, // 2 minutes
-        "long_polling_interval": 45 * 60 * 1000, // 45 minutes
-    },
-    {
-        "name": "Dishwasher",
-        "ipaddress": "<ip address goes here>",
-        "power_on_threshold": 0.25,
-        "power_active_threshold": 1,
-        "quick_polling_interval": 2 * 60 * 1000, // 2 minutes
-        "long_polling_interval": 30 * 60 * 1000, // 30 minutes
-    }
-];
-
-////////////////////////////////////////////////////
-// Telegram Chat configuration
-////////////////////////////////////////////////////
-
-// Telegram chat ID. Find out the Chat ID number here: https://sean-bradley.medium.com/get-telegram-chat-id-80b575520659
-const chat_id = -1;
-
-// Telegram Chat Bot access token
-const telegram_bot_access_token = "XXX:YYY";
-
-////////////////////////////////////////////////////
-// Message configuration
-////////////////////////////////////////////////////
-
-const msg_monitoring_started = "Starting up the monitoring";
-const msg_device_active = "Detected the ${device_name} is turned on";
-const msg_device_finished = "The ${device_name} has finished";
-
 const logEvent = function logEvent(eventName, device, state) {
     const stateString = state != null ? util.inspect(state) : '';
     console.log(
