@@ -24,6 +24,7 @@
     "messages": {
         "monitoring_started": "Starting up the monitoring",
         "device_active": "Detected the ${device_name} is turned on",
-        "device_finished": "The ${device_name} has finished"
+        "device_finished": "The ${device_name} has finished",
+        "device_finished_reminder": "Reminder: The ${device_name} has finished, but is still turned on"
     }
 }
