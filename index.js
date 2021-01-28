@@ -40,6 +40,21 @@ config.devices.forEach(function (deviceConfig, index) {
         device.on('emeter-realtime-update', (emeterRealtime) => {
             logEvent('emeter-realtime-update', device, emeterRealtime);
 
+            if (deviceConfig.using_reminder_polling) {
+                console.info(`${deviceConfig.name}: Hit the reminder interval.`);
+
+                if (emeterRealtime.power < deviceConfig.power_active_threshold && emeterRealtime.power >= deviceConfig.power_on_threshold) {
+                    // Power is still on, send reminder
+                    console.info(`${deviceConfig.name}: Power is still on, sending reminder`);
+                    telegram.sendMessage(config.telegram.chat_id, config.messages.device_finished_reminder.replace("${device_name}", deviceConfig.name));
+                } else {
+                    // Power is now either off, or the appliance is active again.
+                    // No more reminders needed, allow system to recover
+                    console.info(`${deviceConfig.name}: Power has changed. Stopping reminders`);
+                    deviceConfig.using_reminder_polling = false;
+                }
+            }
+
             if (deviceConfig.previous_value >= deviceConfig.power_active_threshold
                 && emeterRealtime.power < deviceConfig.power_active_threshold
                 && !deviceConfig.using_reminder_polling) {
