@@ -44,11 +44,20 @@ config.devices.forEach(function (deviceConfig, index) {
                 && emeterRealtime.power < deviceConfig.power_active_threshold) {
                 telegram.sendMessage(config.telegram.chat_id, config.messages.device_finished.replace("${device_name}", deviceConfig.name));
 
-                // Start listening again, but at a much longer interval, waiting for the next washload
-                console.info(`${deviceConfig.name}: Switching to long polling interval`);
-                device.stopPolling();
-                device.startPolling(deviceConfig.long_polling_interval);
-                deviceConfig.using_quick_polling = false;
+                if (emeterRealtime.power > deviceConfig.power_on_threshold) {
+                    console.info(`${deviceConfig.name}: Waiting for the reminder period`);
+                    device.stopPolling();
+                    device.startPolling(deviceConfig.reminder_interval);
+                    deviceConfig.using_quick_polling = false;
+                    deviceConfig.using_reminder_polling = true;
+                } else {
+                    // Start listening again, but at a much longer interval, waiting for the next washload
+                    console.info(`${deviceConfig.name}: Switching to long polling interval`);
+                    device.stopPolling();
+                    device.startPolling(deviceConfig.long_polling_interval);
+                    deviceConfig.using_quick_polling = false;
+                    deviceConfig.using_reminder_polling = false;
+                }
             } else if (emeterRealtime.power >= deviceConfig.power_active_threshold && !deviceConfig.using_quick_polling) {
                 telegram.sendMessage(config.telegram.chat_id, config.messages.device_active.replace("${device_name}", deviceConfig.name));
                 // Stop long interval polling, and switch to a faster polling rate
