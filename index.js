@@ -58,11 +58,13 @@ config.devices.forEach(function (deviceConfig, index) {
                     deviceConfig.using_quick_polling = false;
                     deviceConfig.using_reminder_polling = false;
                 }
+
             } else if (emeterRealtime.power >= deviceConfig.power_active_threshold && !deviceConfig.using_quick_polling) {
                 telegram.sendMessage(config.telegram.chat_id, config.messages.device_active.replace("${device_name}", deviceConfig.name));
                 // Stop long interval polling, and switch to a faster polling rate
                 console.info(`${deviceConfig.name}: Switching to quick polling interval`);
                 deviceConfig.using_quick_polling = true;
+                deviceConfig.using_reminder_polling = false;
                 device.stopPolling();
                 device.startPolling(deviceConfig.quick_polling_interval);
             }
