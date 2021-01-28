@@ -41,7 +41,8 @@ config.devices.forEach(function (deviceConfig, index) {
             logEvent('emeter-realtime-update', device, emeterRealtime);
 
             if (deviceConfig.previous_value >= deviceConfig.power_active_threshold
-                && emeterRealtime.power < deviceConfig.power_active_threshold) {
+                && emeterRealtime.power < deviceConfig.power_active_threshold
+                && !deviceConfig.using_reminder_polling) {
                 telegram.sendMessage(config.telegram.chat_id, config.messages.device_finished.replace("${device_name}", deviceConfig.name));
 
                 if (emeterRealtime.power > deviceConfig.power_on_threshold) {
